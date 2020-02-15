@@ -10,9 +10,9 @@ def get_file_name() -> str:
     Creates a unique file name for datastore by appending epoch timestamp to the file name
     :return:
     """
-    import time
-    curr_ts = int(time.time()*1000)
-    return "LOCAL_STORAGE_{}".format(curr_ts)
+    import uuid
+    uniq_append_string = uuid.uuid4().hex
+    return "LOCAL_STORAGE_{}".format(uniq_append_string)
 
 
 def get_instance(file_name=None) -> DataStore:
