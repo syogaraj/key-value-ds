@@ -1,7 +1,7 @@
-import fcntl, os
-import sys
-import config
+import fcntl
+import os
 
+import config
 from .datastore import DataStore
 
 
@@ -29,20 +29,17 @@ def get_instance(file_name=None) -> DataStore:
         print(f"Acquiring file lock on {file_name}")
         fcntl.flock(file_descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
-        raise ValueError(f"Resource '{file_name}' is already locked'")
+        raise BlockingIOError(f"Resource '{file_name}' is already locked'")
     except Exception:
         raise
     else:
         print(f"File lock acquired on {file_name}")
 
     """
-        File lock acquired.
-        Fill it with bytes from config.
+        File lock acquired. Put an empty json string ahead in the file as python mmap doesn't support an empty file to be mmap-ed. 
     """
     if not os.path.isfile(full_file_name) or os.fstat(file_descriptor).st_size == 0:
         with open(full_file_name, 'ab') as f:
             string = "{}"
             f.write(bytes(string.encode('ascii')))
-            string_size = sys.getsizeof(string)
-            f.write((config.MAX_LOCAL_STORAGE_SIZE - string_size) * b'\0')
     return DataStore(file_descriptor)
