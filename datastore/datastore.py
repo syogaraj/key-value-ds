@@ -9,6 +9,13 @@ import config
 
 
 def is_legit(val, val_type="key"):
+    """
+        Utility method to check whether the key/value satisfies the constraints respectively.
+        If not, raises ValueError with appropriate messages.
+    :param val: str/dict
+    :param val_type: str
+    :return:
+    """
     if val_type == "key":
         if not isinstance(val, str):
             raise ValueError(f"Key [{val}] must be of type str.")
@@ -58,10 +65,24 @@ class DataStore:
             raise
 
     def _read_data(self) -> None:
+        """
+            Reads the data from mmap and parse it as json and store in data
+        :return:
+        """
         raw_data = self.__mmap[:].decode('ascii').rstrip('\0')
         self.__data = json.loads(raw_data)
 
     def create(self, key, value, ttl=None) -> None:
+        """
+            Creates a new entry for the given key with the value in data if and only if,
+                1. The key is not already present. (raises ValueError with message 'Key already present')
+                2. Both key and value satisfies the size constraints.
+                3. If ttl is provided, it must be an integer
+        :param key: str
+        :param value: dict
+        :param ttl: int
+        :return:
+        """
         with self.__lock:
             if key in self.__data:
                 raise ValueError(f"Key '{key}' already present.")
@@ -79,6 +100,12 @@ class DataStore:
                     f"Either provided key(allowed_size:{config.MAX_KEY_LEN} characters) or value(allowed_size:{config.MAX_VALUE_SIZE} bytes) doesn't meet the size config.")
 
     def delete(self, key) -> None:
+        """
+            Deletes the key-value pair from data.
+            If key is not present it will ignore.
+        :param key: str
+        :return:
+        """
         with self.__lock:
             if key not in self.__data:
                 return  # Ignore if key is non-existent
@@ -86,6 +113,14 @@ class DataStore:
             self.flush()
 
     def get(self, key) -> dict:
+        """
+            Get the value in data for the given key.
+            If key is not present, raises ValueError with message 'Key not in datastore'
+            Calculates the expiry attribute if ttl is provided at the time of key creation and if expired,
+                deletes the key from data.
+        :param key: str
+        :return: dict (value of the key in data if key is present)
+        """
         with self.__lock:
             if key not in self.__data:
                 raise ValueError(f"Key [{key}] not in datastore.")
@@ -97,11 +132,19 @@ class DataStore:
             return value.value
 
     def delete_all(self):
+        """
+            Additional method to flush the database and start new.
+        :return:
+        """
         with self.__lock:
             self.__data = dict()
             self.flush()
 
     def flush(self) -> None:
+        """
+            Writes the data to mmap by converting it to bytes and filling the unused space with null byte char.
+        :return:
+        """
         self.__mmap.seek(0)
         data_string = bytes(json.dumps(self.__data).encode('ascii'))
         self.__mmap.write(data_string)
@@ -109,4 +152,10 @@ class DataStore:
         self.__mmap[self.__mmap.tell():] = b'\0' * empty_space_bytes
 
     def __getitem__(self, item):
+        """
+            A dictionary method so that the instance object can be used as a dictionary to get an item.
+            Example: instance[key] will call self.get(key) to return the value.
+        :param item: str
+        :return: dict (if item is present in data)
+        """
         return self.get(item)
