@@ -5,7 +5,7 @@ import threading
 import time
 from collections import OrderedDict
 
-import config
+from key_value_ds import config
 
 
 def is_legit(val, val_type="key"):

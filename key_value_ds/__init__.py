@@ -1,7 +1,7 @@
 import fcntl
 import os
 
-import config
+from . import config
 from .datastore import DataStore
 
 
@@ -43,3 +43,5 @@ def get_instance(file_name=None) -> DataStore:
             string = "{}"
             f.write(bytes(string.encode('ascii')))
     return DataStore(file_descriptor)
+
+__all__ = ['get_instance']
