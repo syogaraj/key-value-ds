@@ -77,7 +77,7 @@ class DataStore:
             Creates a new entry for the given key with the value in data if and only if,
                 1. The key is not already present. (raises ValueError with message 'Key already present')
                 2. Both key and value satisfies the size constraints.
-                3. If ttl is provided, it must be an integer
+                3. If ttl is provided, it must be an integer in milli-seconds
         :param key: str
         :param value: dict
         :param ttl: int
