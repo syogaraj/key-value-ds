@@ -13,6 +13,8 @@ setup(
     author_email='yogarajsivaprakasam@gmail.com',
     description='A key value datastore which stores data locally in a memory-mapped file.',
     license='MIT',
+    url='https://github.com/syogaraj/key-value-ds',
+    download_url='https://github.com/syogaraj/key-value-ds/releases/tag/v1.0.1',
     packages=['key_value_ds', 'tests'],
     long_description=read('README.md'),
     classifiers=[
