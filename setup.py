@@ -8,7 +8,7 @@ def read(fname):
 
 setup(
     name='key_value_ds',
-    version='1.0',
+    version='1.0.1',
     author='Yogaraj.S',
     author_email='yogarajsivaprakasam@gmail.com',
     description='A key value datastore which stores data locally in a memory-mapped file.',
