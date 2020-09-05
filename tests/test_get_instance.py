@@ -1,6 +1,6 @@
 import pytest
 
-from datastore import get_instance, get_file_name, DataStore
+from key_value_ds import get_instance, get_file_name, DataStore
 
 
 def test_get_instance():

@@ -1,8 +1,7 @@
 import pytest
 import time
 
-import config
-from datastore import get_instance
+from key_value_ds import get_instance, config
 
 
 def flush_datastore(instance):
